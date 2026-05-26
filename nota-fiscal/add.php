@@ -5,6 +5,9 @@ include __DIR__ . "/../topo.php";
 $stmt_ = $pdo->prepare('DELETE FROM nfe_produtos WHERE temp = 1');
 $stmt_->execute();
 
+$stmt_dup = $pdo->prepare('DELETE FROM nfe_duplicatas WHERE temp = 1');
+$stmt_dup->execute();
+
 $consulta = $pdo->query("SELECT id_nfe FROM nfe ORDER BY id_nfe DESC LIMIT 0,1");
 $linha = $consulta->fetch(PDO::FETCH_ASSOC);
 
@@ -14,7 +17,7 @@ if ($linha['id_nfe'] == "") {
     $id_nfe = $linha['id_nfe'] + 1;
 }
 
-$consultaEmissor = $pdo->query("SELECT * FROM usuarios WHERE ativo = 1 AND empresa = " . $company . " ORDER BY nome ASC");
+$consultaEmissor = $pdo->query("SELECT * FROM usuarios WHERE ativo = 1 ORDER BY nome ASC");
 while ($linhaEmissor = $consultaEmissor->fetch(PDO::FETCH_ASSOC)) {
     $loopEmissor .= '<option value="' . $linhaEmissor['id'] . '">' . $linhaEmissor['nome'] . '</option>';
 }
@@ -268,7 +271,58 @@ if ($linhaNfe['nota_fiscal'] == "") {
                                             </span>
                                             <div class="d-flex flex-column text-dark-75">
                                                 <span class="font-weight-bolder font-size-sm">Total da Nota</span>
-                                                <span class="font-weight-bolder font-size-h5"><span class="text-dark-50 font-weight-bold">R$ </span>0,00</span>
+                                                <span class="font-weight-bolder font-size-h5"><span class="text-dark-50 font-weight-bold">R$ </span><span class="total-nota-text">0,00</span></span>
+                                                <input type="hidden" id="total_nota_val" value="0">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="separator separator-dashed my-10"></div>
+
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <h3 class="card-title align-items-start flex-column mb-0">
+                                            <span class="font-weight-bolder text-dark">Duplicatas</span>
+                                        </h3>
+                                        <a href="#" class="btn btn-light-primary font-weight-bold mr-2 add-duplicata" data-toggle="modal" data-target="#addDuplicata">Adicionar Duplicata</a>
+                                    </div>
+
+                                    <div class="table-responsive-lg">
+                                        <table class="table table-striped table-bordered ">
+                                            <thead>
+                                                <tr class="table-active">
+                                                    <th class="text-center" scope="col">Nº Duplicata</th>
+                                                    <th class="text-center" scope="col">Vencimento</th>
+                                                    <th class="text-nowrap" scope="col">Valor</th>
+                                                    <th style="width: 90px;">#</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="duplicatas">
+                                                <tr>
+                                                    <th class="text-center" colspan="4">Sem duplicatas cadastradas</th>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div class="d-flex align-items-center flex-wrap mb-5">
+                                        <div class="d-flex align-items-center flex-lg-fill mr-5 my-1">
+                                        </div>
+                                        <div class="d-flex align-items-center flex-lg-fill mr-5 my-1">
+                                        </div>
+                                        <div class="d-flex align-items-center flex-lg-fill mr-5 my-1">
+                                        </div>
+                                        <div class="d-flex align-items-center flex-lg-fill mr-5 my-1">
+                                        </div>
+                                        <div class="d-flex align-items-center flex-lg-fill mr-5 my-1">
+                                        </div>
+                                        <div class="d-flex align-items-center flex-lg-fill mr-5 my-1">
+                                            <span class="mr-4">
+                                                <i class="flaticon-coins icon-2x text-muted font-weight-bold"></i>
+                                            </span>
+                                            <div class="d-flex flex-column text-dark-75">
+                                                <span class="font-weight-bolder font-size-sm">Total Duplicatas</span>
+                                                <span class="font-weight-bolder font-size-h5"><span class="text-dark-50 font-weight-bold">R$ </span><span class="total-duplicatas-text">0,00</span></span>
+                                                <input type="hidden" id="total_duplicatas_val" value="0">
                                             </div>
                                         </div>
                                     </div>
@@ -290,7 +344,6 @@ if ($linhaNfe['nota_fiscal'] == "") {
                                         </div>
                                         <div>
                                             <button type="button" class="btn btn-primary font-weight-bolder text-uppercase px-9 py-4" data-wizard-type="action-submit">Gravar</button>
-                                            <!-- <a href="imprimir-nfe?id=<?= $id ?>" class="btn btn-primary font-weight-bolder text-uppercase px-9 py-4" title="Imprimir Nota" target="_blank">Imprimir NFe</a> -->
                                         </div>
                                     </div>
 
@@ -889,6 +942,62 @@ if ($linhaNfe['nota_fiscal'] == "") {
     </div>
 </div>
 
+<!-- Modal Adicionar Duplicata-->
+<div class="modal fade" id="addDuplicata" role="dialog" aria-labelledby="staticBackdrop" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="" id="duplicatas_add" data-wizard-state="step-first" data-wizard-clickable="true">
+                <form class="form" id="duplicatas_add_form">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Adicionar Duplicata</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <i aria-hidden="true" class="ki ki-close"></i>
+                        </button>
+                    </div>
+
+                    <div class="modal-body p-5">
+                        <input type="hidden" name="type" value="duplicatas_add" />
+                        <input type="hidden" name="id_nfe" value="<?= $id_nfe ?>" />
+
+                        <div class="form-group row mb-5">
+                            <label class="col-form-label col-xl-4 col-lg-4">Nº Duplicata:<span class="text-danger">*</span></label>
+                            <div class="col-lg-8 col-xl-8">
+                                <input type="text" class="form-control form-control-sm" placeholder="Ex: 001" name="n_dup">
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-5">
+                            <label class="col-form-label col-xl-4 col-lg-4">Vencimento:<span class="text-danger">*</span></label>
+                            <div class="col-lg-8 col-xl-8">
+                                <input type="text" class="form-control form-control-sm dateMask" placeholder="Data" name="dt_vencimento" value="<?= date('d/m/Y') ?>">
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-5">
+                            <label class="col-form-label col-xl-4 col-lg-4">Valor:<span class="text-danger">*</span></label>
+                            <div class="col-lg-8 col-xl-8">
+                                <div class="input-group">
+                                    <input type="text" class="form-control form-control-sm moneyMask" placeholder="Valor" name="valor">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">
+                                            <i class="la la-dollar-sign icon-lg"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success font-weight-bold action-hidden-dup" data-wizard-type="action-submit">Gravar</button>
+                        <button type="button" class="btn btn-light-primary font-weight-bold" data-dismiss="modal">Fechar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!--end::Content-->
 <div id="theModal" class="modal fade text-center">
     <div class="modal-dialog">
@@ -902,3 +1011,5 @@ if ($linhaNfe['nota_fiscal'] == "") {
 <!--end::Footer-->
 
 <script src="<?= $url ?>assets/js/nota-fiscal/add.js"></script>
+<script src="<?= $url ?>assets/js/nota-fiscal/ncm.js"></script>
+<script src="<?= $url ?>assets/js/nota-fiscal/cfop.js"></script>

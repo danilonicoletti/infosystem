@@ -28,6 +28,22 @@ var KTNotaEdit = (function () {
             if (validator) {
                 validator.validate().then(function (status) {
                     if (status == 'Valid') {
+                        var totalNota = parseFloat($('#total_nota_val').val()) || 0;
+                        var totalDuplicatas = parseFloat($('#total_duplicatas_val').val()) || 0;
+                        
+                        if (totalDuplicatas > 0 && Math.abs(totalDuplicatas - totalNota) > 0.01) {
+                            Swal.fire({
+                                html: 'A soma das duplicatas (R$ ' + numeroParaMoeda(totalDuplicatas) + ') é diferente do total da nota (R$ ' + numeroParaMoeda(totalNota) + ').',
+                                icon: 'warning',
+                                buttonsStyling: false,
+                                confirmButtonText: 'OK, entendi!',
+                                customClass: {
+                                    confirmButton: 'btn font-weight-bold btn-primary',
+                                },
+                            });
+                            return;
+                        }
+
                         var data = new FormData();
 
                         //Form data
@@ -591,6 +607,173 @@ var KTprodutosEdit = (function () {
     };
 })();
 
+var KTDuplicatasAdd = (function () {
+    // Base elements
+    var _wizardEl;
+    var _formEl;
+    var _wizardObj;
+    var _validations = [];
+
+    // Private functions
+    var _initWizard = function () {
+        // Initialize form wizard
+        _wizardObj = new KTWizard(_wizardEl, {
+            startStep: 1, // initial active step number
+            clickableSteps: false, // allow step clicking
+        });
+
+        // Change event
+        _wizardObj.on('changed', function (wizard) {
+            KTUtil.scrollTop();
+        });
+
+        // Submit event
+        _wizardObj.on('submit', function (wizard) {
+            $('.action-hidden-dup').hide();
+
+            var validator = _validations[0]; // get validator for currnt step
+
+            if (validator) {
+                validator.validate().then(function (status) {
+                    if (status == 'Valid') {
+                        var data = new FormData();
+
+                        //Form data
+                        var form_data = $('#duplicatas_add_form').serializeArray();
+                        $.each(form_data, function (key, input) {
+                            data.append(input.name, input.value);
+                        });
+
+                        $.ajax({
+                            url: '../nota-fiscal/sql.php',
+                            type: 'POST',
+                            data: data,
+                            processData: false,
+                            contentType: false,
+                            success: function (data, status) {
+                                var resposta = data.split('||');
+                                if (resposta[0] == 'success') {
+                                    Swal.fire({
+                                        title: 'Inserida!',
+                                        text: 'Duplicata inserida com sucesso!',
+                                        icon: 'success',
+                                        timer: 1000,
+                                        onOpen: function () {
+                                            Swal.showLoading();
+                                        },
+                                    }).then(function (result) {
+                                        $('.action-hidden-dup').show();
+
+                                        $('#addDuplicata').modal('toggle');
+
+                                        $('input[name=n_dup]').val('');
+                                        $('input[name=valor]').val('');
+
+                                        var id_nfe = $('#id_nfe').val();
+
+                                        $.ajax({
+                                            url: '../nota-fiscal/sql.php',
+                                            type: 'POST',
+                                            dataType: 'html',
+                                            data: {
+                                                type: 'duplicatas_view_edit',
+                                                id_nfe: id_nfe,
+                                            },
+                                            success: function (data) {
+                                                var resposta = data.split("||");
+                                                $('.duplicatas').html(resposta[0]);
+                                                $('.total-duplicatas-text').html(numeroParaMoeda(resposta[1]));
+                                                $('#total_duplicatas_val').val(resposta[1]);
+                                            },
+                                        });
+
+                                    });
+                                } else {
+                                    $('.action-hidden-dup').show();
+
+                                    Swal.fire({
+                                        html: resposta[1],
+                                        icon: 'error',
+                                        buttonsStyling: false,
+                                        confirmButtonText: 'OK, entendi!',
+                                        customClass: {
+                                            confirmButton: 'btn font-weight-bold btn-primary',
+                                        },
+                                    });
+                                }
+                            },
+                            error: function (xhr, desc, err) {
+                                $('.action-hidden-dup').show();
+
+                                Swal.fire({
+                                    html: 'A Duplicata não foi adicionada!',
+                                    icon: 'error',
+                                    buttonsStyling: false,
+                                    confirmButtonText: 'OK, entendi!',
+                                    customClass: {
+                                        confirmButton: 'btn font-weight-bold btn-primary',
+                                    },
+                                });
+                            },
+                        });
+                    } else {
+                        $('.action-hidden-dup').show();
+                    }
+                });
+            }
+        });
+    };
+
+    var _initValidation = function () {
+        _validations.push(
+            FormValidation.formValidation(_formEl, {
+                fields: {
+                    n_dup: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Número da duplicata é Necessário',
+                            },
+                        },
+                    },
+                    dt_vencimento: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Vencimento é Necessário',
+                            },
+                        },
+                    },
+                    valor: {
+                        validators: {
+                            notEmpty: {
+                                message: 'Valor é Necessário',
+                            },
+                        },
+                    },
+                },
+                plugins: {
+                    trigger: new FormValidation.plugins.Trigger(),
+                    bootstrap: new FormValidation.plugins.Bootstrap({
+                        eleValidClass: '',
+                    }),
+                },
+            })
+        );
+    };
+
+    return {
+        // public functions
+        init: function () {
+            _wizardEl = KTUtil.getById('duplicatas_add');
+            _formEl = KTUtil.getById('duplicatas_add_form');
+
+            if(_wizardEl) {
+                _initWizard();
+                _initValidation();
+            }
+        },
+    };
+})();
+
 var KTDatatableCFOPServer = (function () {
     var initTable2 = function () {
         var table = $('#kt_datatable_cfops').DataTable({
@@ -751,6 +934,7 @@ jQuery(document).ready(function () {
     KTNotaEdit.init();
     KTprodutosAdd.init();
     KTprodutosEdit.init();
+    KTDuplicatasAdd.init();
     KTDatatableCFOPServer.init();
     KTDatatableNCMServer.init();
 
@@ -943,6 +1127,74 @@ jQuery(document).ready(function () {
                                         var resposta = data.split("||");
                                         $('.produtos').html(resposta[0]);
                                         $('.produtos-total').html(resposta[1]);
+                                    },
+                                });
+                            });
+                        } else {
+                            Swal.fire({
+                                html: resposta[1],
+                                icon: 'error',
+                                buttonsStyling: false,
+                                confirmButtonText: 'OK, entendi!',
+                                customClass: {
+                                    confirmButton: 'btn font-weight-bold btn-primary',
+                                },
+                            });
+                        }
+                    },
+                });
+            }
+        });
+    });
+
+    $(document).on('click', '.remover-duplicata', function (e) {
+        e.preventDefault();
+        var id = $(this).attr('id');
+        Swal.fire({
+            title: 'Deseja remover?',
+            html: '',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Sim, remover!',
+            cancelButtonText: 'Não, cancelar!',
+        }).then((result) => {
+            if (result.value) {
+                $.ajax({
+                    url: HOST_URL + 'nota-fiscal/sql.php',
+                    type: 'POST',
+                    data: {
+                        type: 'duplicatas_remove',
+                        id: id,
+                    },
+                    success: function (data, status) {
+                        var resposta = data.split('||');
+                        if (resposta[0] == 'success') {
+                            Swal.fire({
+                                title: 'Removida!',
+                                text: 'Duplicata removida com sucesso!',
+                                icon: 'success',
+                                timer: 1000,
+                                onOpen: function () {
+                                    Swal.showLoading();
+                                },
+                            }).then(function (result) {
+                                var id_nfe = $('#id_nfe').val();
+
+                                $.ajax({
+                                    url: '../nota-fiscal/sql.php',
+                                    type: 'POST',
+                                    dataType: 'html',
+                                    data: {
+                                        type: 'duplicatas_view_edit',
+                                        id_nfe: id_nfe,
+                                    },
+                                    success: function (data) {
+                                        var resposta = data.split("||");
+                                        $('.duplicatas').html(resposta[0]);
+                                        $('.total-duplicatas-text').html(numeroParaMoeda(resposta[1]));
+                                        $('#total_duplicatas_val').val(resposta[1]);
                                     },
                                 });
                             });

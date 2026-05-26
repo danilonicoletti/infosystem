@@ -14,7 +14,7 @@ session_start();
 setlocale(LC_TIME, 'pt_BR', 'pt_BR.utf-8', 'pt_BR.utf-8', 'portuguese');
 date_default_timezone_set('America/Sao_Paulo');
 
-define("DB_SERVER", "66.253.112.215");
-define("DB_USER", "polomarm_info");
-define("DB_PASSWORD", "h[*iQ*r?rs9NLngy");
-define("DB_DATABASE", "polomarm_system");
+define("DB_SERVER", "localhost");
+define("DB_USER", "root");
+define("DB_PASSWORD", "Petron88@5");
+define("DB_DATABASE", "infosystem");

@@ -64,6 +64,9 @@ if ($type == 'nota_add') {
         $stmt_ = $pdo->prepare('UPDATE nfe_produtos SET temp = 0 WHERE id_nfe = ' . $id_nfe);
         $stmt_->execute();
 
+        $stmt_dup = $pdo->prepare('UPDATE nfe_duplicatas SET temp = 0 WHERE id_nfe = ' . $id_nfe);
+        $stmt_dup->execute();
+
         echo "success||";
     } catch (PDOException $e) {
 
@@ -687,3 +690,140 @@ if ($type == 'retornar_assinatura') {
     }
 }
 /* end::Outro */
+
+/* Begin::Duplicatas */
+if ($type == 'duplicatas_add') {
+
+    $columns = array('id_nfe', 'n_dup', 'dt_vencimento', 'valor', 'temp');
+    $column_insert = join(', ', $columns);
+
+    $param_insert = join(', ', array_map(function ($columns) {
+        return ":$columns";
+    }, $columns));
+
+    try {
+        if ($_POST['valor'] == "") {
+            $valor = 0;
+        } else {
+            $valor = str_replace(",", ".", str_replace(".", "", filter_input(INPUT_POST, 'valor', FILTER_DEFAULT)));
+        }
+        
+        $dt_venc = new DateTime(implode("-", array_reverse(explode("/", filter_input(INPUT_POST, "dt_vencimento", FILTER_DEFAULT)))));
+
+        $sql = 'INSERT INTO nfe_duplicatas (' . $column_insert . ') VALUES(' . $param_insert . ')';
+        $stmt = $pdo->prepare($sql);
+
+        $parameters = array(
+            ':id_nfe' => filter_input(INPUT_POST, 'id_nfe', FILTER_DEFAULT),
+            ':n_dup' => filter_input(INPUT_POST, 'n_dup', FILTER_DEFAULT),
+            ':dt_vencimento' => $dt_venc->format('Y-m-d'),
+            ':valor' => $valor,
+            ':temp' => '1',
+        );
+
+        $stmt->execute($parameters);
+        echo "success||";
+    } catch (PDOException $e) {
+        $number_error = rand();
+        $fp = fopen("../report/error_log_" . date('dmY') . ".txt", "a");
+        fwrite($fp, $number_error . "|duplicatas_nfe_add|" . debugPDO($sql, $parameters) . "\n\n");
+        fclose($fp);
+        echo "error||Algo deu errado, informe o numero <b>" . $number_error . "</b> para o Administrador do sistema!";
+    }
+}
+
+if ($type == 'duplicatas_add_edit') {
+
+    $columns = array('id_nfe', 'n_dup', 'dt_vencimento', 'valor', 'temp');
+    $column_insert = join(', ', $columns);
+
+    $param_insert = join(', ', array_map(function ($columns) {
+        return ":$columns";
+    }, $columns));
+
+    try {
+        if ($_POST['valor'] == "") {
+            $valor = 0;
+        } else {
+            $valor = str_replace(",", ".", str_replace(".", "", filter_input(INPUT_POST, 'valor', FILTER_DEFAULT)));
+        }
+        
+        $dt_venc = new DateTime(implode("-", array_reverse(explode("/", filter_input(INPUT_POST, "dt_vencimento", FILTER_DEFAULT)))));
+
+        $sql = 'INSERT INTO nfe_duplicatas (' . $column_insert . ') VALUES(' . $param_insert . ')';
+        $stmt = $pdo->prepare($sql);
+
+        $parameters = array(
+            ':id_nfe' => filter_input(INPUT_POST, 'id_nfe', FILTER_DEFAULT),
+            ':n_dup' => filter_input(INPUT_POST, 'n_dup', FILTER_DEFAULT),
+            ':dt_vencimento' => $dt_venc->format('Y-m-d'),
+            ':valor' => $valor,
+            ':temp' => '0',
+        );
+
+        $stmt->execute($parameters);
+        echo "success||";
+    } catch (PDOException $e) {
+        $number_error = rand();
+        $fp = fopen("../report/error_log_" . date('dmY') . ".txt", "a");
+        fwrite($fp, $number_error . "|duplicatas_nfe_add_edit|" . debugPDO($sql, $parameters) . "\n\n");
+        fclose($fp);
+        echo "error||Algo deu errado, informe o numero <b>" . $number_error . "</b> para o Administrador do sistema!";
+    }
+}
+
+if ($type == 'duplicatas_remove') {
+    try {
+        $stmt_ = $pdo->prepare('DELETE FROM nfe_duplicatas WHERE id_duplicata = :id');
+        $stmt_->bindParam(':id', $_POST['id']);
+        $stmt_->execute();
+        echo 'success||';
+    } catch (PDOException $e) {
+        $number_error = rand();
+        $fp = fopen("../report/error_log_" . date('dmY') . ".txt", "a");
+        $escreve = fwrite($fp, $number_error . "|duplicatas_nfe_delete|DELETE FROM nfe_duplicatas WHERE id_duplicata = " . $_POST['id'] . "\n\n");
+        fclose($fp);
+        echo "error||Algo deu errado, informe o numero <b>" . $number_error . "</b> para o Administrador do sistema!";
+    }
+}
+
+if ($type == 'duplicatas_view' || $type == 'duplicatas_view_edit') {
+
+    $id_nfe = filter_input(INPUT_POST, 'id_nfe', FILTER_DEFAULT);
+    
+    // Para a view normal as duplicatas devem ser apenas as temporarias daquela NFE. Se for edit, podem ser todas as daquela NFe.
+    // Como a lógica da nfe usa $id_nfe = id max + 1 no add.php e não faz a distinção pelo usuário logado, vamos pegar temp = 1 pra view normal e = 0 para edit, se necessário, ou só filtrar pelo id_nfe.
+    $where = ($type == 'duplicatas_view') ? "id_nfe = " . $id_nfe . " AND temp = 1" : "id_nfe = " . $id_nfe;
+
+    $consultaDup = $pdo->query("SELECT id_duplicata, n_dup, dt_vencimento, valor FROM nfe_duplicatas WHERE " . $where . " ORDER BY dt_vencimento ASC");
+    $total = $consultaDup->rowCount();
+    $total_duplicatas = 0;
+    
+    $loopDup = '';
+
+    if ($total >= 1) {
+        while ($linhaDup = $consultaDup->fetch(PDO::FETCH_ASSOC)) {
+            $data = new DateTime($linhaDup['dt_vencimento']);
+            $valor = $linhaDup['valor'];
+            
+            $loopDup .= '<tr>
+                            <td class="text-center">' . $linhaDup['n_dup'] . '</td>
+                            <td class="text-center">' . $data->format('d/m/Y') . '</td>
+                            <td class="text-nowrap">R$ ' . number_format($valor, 2, ",", ".") . '</td>
+                            <td>
+                                <a href="javascript:;" class="btn btn-sm btn-clean btn-icon remover-duplicata" title="Remover" id="' . $linhaDup['id_duplicata'] . '">
+                                    <i class="la la-trash"></i>
+                                </a>
+                            </td>
+                        </tr>';
+            $total_duplicatas += $valor;
+        }
+
+        echo $loopDup . "||" . $total_duplicatas;
+    } else {
+        echo "<tr>
+                 <th class='text-center' colspan='4'>Sem duplicatas cadastradas</th>
+             </tr>||0";
+    }
+}
+/* end::Duplicatas */

@@ -80,6 +80,34 @@ if ($total >= 1) {
             </tr>';
 }
 
+$consultaDup = $pdo->query("SELECT id_duplicata, n_dup, dt_vencimento, valor FROM nfe_duplicatas WHERE id_nfe = " . $id_nfe . " ORDER BY dt_vencimento ASC");
+$totalDup = $consultaDup->rowCount();
+$total_duplicatas = 0;
+$loopDup = '';
+
+if ($totalDup >= 1) {
+    while ($linhaDup = $consultaDup->fetch(PDO::FETCH_ASSOC)) {
+        $dataDup = new DateTime($linhaDup['dt_vencimento']);
+        $valorDup = $linhaDup['valor'];
+        
+        $loopDup .= '<tr>
+                        <td class="text-center">' . $linhaDup['n_dup'] . '</td>
+                        <td class="text-center">' . $dataDup->format('d/m/Y') . '</td>
+                        <td class="text-nowrap">R$ ' . number_format($valorDup, 2, ",", ".") . '</td>
+                        <td>
+                            <a href="javascript:;" class="btn btn-sm btn-clean btn-icon remover-duplicata" title="Remover" id="' . $linhaDup['id_duplicata'] . '">
+                                <i class="la la-trash"></i>
+                            </a>
+                        </td>
+                    </tr>';
+        $total_duplicatas += $valorDup;
+    }
+} else {
+    $loopDup = '<tr>
+                 <th class="text-center" colspan="4">Sem duplicatas cadastradas</th>
+             </tr>';
+}
+
 if($linha['status'] != '0'){
     $disabled = 'disabled';
     $readonly = 'readonly';
@@ -302,7 +330,56 @@ if($linha['status'] != '0'){
                                             </span>
                                             <div class="d-flex flex-column text-dark-75">
                                                 <span class="font-weight-bolder font-size-sm">Total da Nota</span>
-                                                <span class="font-weight-bolder font-size-h5"><span class="text-dark-50 font-weight-bold">R$ </span><?= number_format($total_total, 2, ",", ".") ?></span>
+                                                <span class="font-weight-bolder font-size-h5"><span class="text-dark-50 font-weight-bold">R$ </span><span class="total-nota-text"><?= number_format($total_total, 2, ",", ".") ?></span></span>
+                                                <input type="hidden" id="total_nota_val" value="<?= $total_total ?>">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="separator separator-dashed my-10"></div>
+                                    
+                                    <div class="d-flex justify-content-between mb-3">
+                                        <h3 class="card-title align-items-start flex-column">
+                                            <span class="font-weight-bolder text-dark">Duplicatas</span>
+                                        </h3>
+                                        <?php if ($linha['status'] == '0') { ?>
+                                        <a href="#" class="btn btn-light-primary font-weight-bold mr-2 add-duplicata" data-toggle="modal" data-target="#addDuplicata">Adicionar Duplicata</a>
+                                        <?php } ?>
+                                    </div>
+                                    
+                                    <div class="table-responsive-lg">
+                                        <table class="table table-striped table-bordered ">
+                                            <thead>
+                                                <tr class="table-active">
+                                                    <th class="text-center" scope="col">Nº Duplicata</th>
+                                                    <th class="text-center" scope="col">Vencimento</th>
+                                                    <th class="text-nowrap" scope="col">Valor</th>
+                                                    <th style="width: 90px;">#</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="duplicatas">
+                                                <?= $loopDup ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div class="d-flex align-items-center flex-wrap mb-5">
+                                        <div class="d-flex align-items-center flex-lg-fill mr-5 my-1 ml-15">
+                                        </div>
+                                        <div class="d-flex align-items-center flex-lg-fill mr-5 my-1">
+                                        </div>
+                                        <div class="d-flex align-items-center flex-lg-fill mr-5 my-1">
+                                        </div>
+                                        <div class="d-flex align-items-center flex-lg-fill mr-5 my-1">
+                                        </div>
+                                        <div class="d-flex align-items-center flex-lg-fill mr-5 my-1">
+                                            <span class="mr-4">
+                                                <i class="flaticon-coins icon-2x text-muted font-weight-bold"></i>
+                                            </span>
+                                            <div class="d-flex flex-column text-dark-75">
+                                                <span class="font-weight-bolder font-size-sm">Total Duplicatas</span>
+                                                <span class="font-weight-bolder font-size-h5"><span class="text-dark-50 font-weight-bold">R$ </span><span class="total-duplicatas-text"><?= number_format($total_duplicatas, 2, ",", ".") ?></span></span>
+                                                <input type="hidden" id="total_duplicatas_val" value="<?= $total_duplicatas ?>">
                                             </div>
                                         </div>
                                     </div>
@@ -929,6 +1006,62 @@ if($linha['status'] != '0'){
     </div>
 </div>
 
+<!-- Modal Adicionar Duplicata-->
+<div class="modal fade" id="addDuplicata" role="dialog" aria-labelledby="staticBackdrop" aria-hidden="true">
+    <div class="modal-dialog modal-md modal-dialog-scrollable" role="document">
+        <div class="modal-content">
+            <div class="" id="duplicatas_add" data-wizard-state="step-first" data-wizard-clickable="true">
+                <form class="form" id="duplicatas_add_form">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Adicionar Duplicata</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <i aria-hidden="true" class="ki ki-close"></i>
+                        </button>
+                    </div>
+
+                    <div class="modal-body p-5">
+                        <input type="hidden" name="type" value="duplicatas_add_edit" />
+                        <input type="hidden" name="id_nfe" value="<?= $id_nfe ?>" />
+                        
+                        <div class="form-group row mb-5">
+                            <label class="col-form-label col-xl-4 col-lg-4">Nº Duplicata:<span class="text-danger">*</span></label>
+                            <div class="col-lg-8 col-xl-8">
+                                <input type="text" class="form-control form-control-sm" placeholder="Ex: 001" name="n_dup">
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-5">
+                            <label class="col-form-label col-xl-4 col-lg-4">Vencimento:<span class="text-danger">*</span></label>
+                            <div class="col-lg-8 col-xl-8">
+                                <input type="text" class="form-control form-control-sm dateMask" placeholder="Data" name="dt_vencimento" value="<?= date('d/m/Y') ?>">
+                            </div>
+                        </div>
+
+                        <div class="form-group row mb-5">
+                            <label class="col-form-label col-xl-4 col-lg-4">Valor:<span class="text-danger">*</span></label>
+                            <div class="col-lg-8 col-xl-8">
+                                <div class="input-group">
+                                    <input type="text" class="form-control form-control-sm moneyMask" placeholder="Valor" name="valor">
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">
+                                            <i class="la la-dollar-sign icon-lg"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success font-weight-bold action-hidden-dup" data-wizard-type="action-submit">Gravar</button>
+                        <button type="button" class="btn btn-light-primary font-weight-bold" data-dismiss="modal">Fechar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!--end::Content-->
 <div id="theModal" class="modal fade text-center">
     <div class="modal-dialog">
@@ -942,3 +1075,8 @@ if($linha['status'] != '0'){
 <!--end::Footer-->
 
 <script src="<?= $url ?>assets/js/nota-fiscal/edit.js"></script>
+<script src="<?= $url ?>assets/js/nota-fiscal/ncm.js"></script>
+<script src="<?= $url ?>assets/js/nota-fiscal/cfop.js"></script>
+</body>
+
+</html>
