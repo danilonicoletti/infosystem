@@ -1,0 +1,123 @@
+body {
+    background-color: #2e5290;
+    background-image: url(../media/bg/bg-2.jpg) !important;
+    background-size: cover;
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+}
+
+::-webkit-scrollbar {
+    width: 7px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-button {
+    background-color: #ccc;
+}
+
+::-webkit-scrollbar-track {
+    background-color: #999;
+}
+
+::-webkit-scrollbar-track-piece {
+    background-color: #ffffff;
+}
+
+::-webkit-scrollbar-thumb {
+    height: 50px;
+    background-color: #666;
+    border-radius: 1px;
+    cursor: pointer;
+}
+
+::-webkit-scrollbar-corner {
+    background-color: #999;
+}
+
+::-webkit-resizer {
+    background-color: #666;
+}
+
+/* input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+} */
+
+/* Firefox */
+/* input[type=number] {
+    -moz-appearance: textfield;
+} */
+
+.fv-plugins-message-container .fv-help-block {
+    font-size: 0.7rem !important;
+    margin-top: -0.2rem !important;
+}
+
+.fv-plugins-message-container {
+    position: absolute;
+}
+
+span.form-text.text-muted {
+    font-size: 0.7rem !important;
+}
+
+.table-sm th,
+.table-sm td {
+    padding: 0.4rem 1rem !important;
+}
+
+.select2-selection__rendered {
+    font-size: 0.9rem !important;
+}
+
+.select2-results__option {
+    font-size: 0.9rem !important;
+}
+
+span.select2-selection.select2-selection--single {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+/* span.select2-search.select2-search--dropdown {
+    display: none;
+} */
+
+@media (min-width: 992px) and (max-width: 1200px) {
+    .header-menu .menu-nav>.menu-item>.menu-link {
+        padding: 0 1.3rem !important;
+    }
+
+    .header-menu .menu-nav>.menu-item>.menu-link .menu-text {
+        font-size: 0.8rem !important;
+    }
+}
+
+a.btn.btn-sm.btn-clean.btn-icon.copiar {
+    position: absolute;
+    right: -24px;
+    bottom: 14px;
+}
+
+a.btn.btn-sm.btn-clean.btn-icon.atualizar {
+    position: absolute;
+    right: -24px;
+    bottom: 20px;
+}
+
+
+.semCliente {
+    display: none;
+}
+
+.label.label-dot {
+    line-height: 12px !important;
+    min-height: 12px !important;
+    min-width: 12px !important;
+    height: 12px !important;
+    width: 12px !important;
+    margin-left: 6px;
+    -webkit-box-shadow: 2px 1px 5px -1px rgb(67 67 67 / 70%);
+    box-shadow: 2px 1px 5px -1px rgb(67 67 67 / 70%);
+}

@@ -1,0 +1,409 @@
+<!-- Modal Editar Produto-->
+<div class="modal fade" id="editProduto" role="dialog" aria-labelledby="staticBackdrop" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+
+        <div class="modal-content">
+            <div class="" id="produtos_add_edit" data-wizard-state="step-first" data-wizard-clickable="true">
+                <form class="form" id="produtos_add_edit_form">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">Editar Produto</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <i aria-hidden="true" class="ki ki-close"></i>
+                        </button>
+                    </div>
+
+                    <div class="modal-body p-5">
+                        <div class="scroll scroll-pull" data-scroll="true" data-wheel-propagation="true"
+                            style="height: 450px">
+                            <div class="row mb-0">
+                                <div class="col-12">
+                                    <div class="" id="produtos_edit" data-wizard-state="step-first"
+                                        data-wizard-clickable="true">
+
+                                        <div class="row justify-content-center">
+                                            <div class="col-xl-10 col-xxl-10">
+
+                                                <input type="hidden" name="type" value="produtos_add_edit" />
+                                                <input type="hidden" name="id_produtoE" value="" />
+                                                <input type="hidden" name="id_romaneioE" value="" />
+
+                                                <div class="form-group row mb-5">
+                                                    <label class="col-form-label col-xl-3 col-lg-3">Produto:<span
+                                                            class="text-danger">*</span></label>
+                                                    <div class="col-xl-9 col-lg-9">
+                                                        <div class="input-icon input-icon-right">
+                                                            <input type="text" class="form-control form-control-sm"
+                                                                name="produtoE" placeholder="Produto"
+                                                                autocomplete="INFOSYSTEM" readonly>
+                                                            <span>
+                                                                <a href="#" class="listaProduto" data-toggle="modal"
+                                                                    data-target="#listaProdutos">
+                                                                    <i class="flaticon2-search-1 icon-md"></i>
+                                                                </a>
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xl-12">
+                                                        <div class="form-group row mb-5">
+                                                            <label
+                                                                class="col-form-label col-xl-3 col-lg-3">Espessura:<span
+                                                                    class="text-danger">*</span></label>
+                                                            <div class="col-lg-9 col-xl-9">
+                                                                <input type="text" class="form-control form-control-sm"
+                                                                    placeholder="Espessura" name="espessuraE" readonly>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-xl-7">
+                                                        <div class="form-group row mb-5">
+                                                            <label class="col-form-label col-xl-5 col-lg-5"
+                                                                style="flex: 0 0 42.666667% !important;max-width: 42.666667% !important;">Chapas:<span
+                                                                    class="text-danger">*</span></label>
+                                                            <div class="col-lg-7 col-xl-7"
+                                                                style="flex: 0 0 57.333333% !important;">
+                                                                <input type="number"
+                                                                    class="form-control form-control-sm"
+                                                                    placeholder="Chapas" name="chapasE">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-xl-5">
+                                                        <div class="form-group row mb-5">
+                                                            <label
+                                                                class="col-form-label col-xl-3 col-lg-3">Unidade:</label>
+                                                            <div class="col-lg-9 col-xl-9">
+                                                                <select class="form-control form-control-sm"
+                                                                    name="unidadeE">
+                                                                    <option value="">...</option>
+                                                                    <option value="m">m</option>
+                                                                    <option value="m2">m²</option>
+                                                                    <option value="Conjunto">Conjunto</option>
+                                                                    <option value="Peça">Peça</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-xl-12">
+                                                        <div class="form-group row mb-5">
+                                                            <label
+                                                                class="col-form-label col-xl-3 col-lg-3">Comprimento:<span
+                                                                    class="text-danger">*</span></label>
+                                                            <div class="col-lg-9 col-xl-9">
+                                                                <input type="text"
+                                                                    class="form-control form-control-sm qtdMask"
+                                                                    placeholder="Comprimento" name="comprimentoE">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-xl-12">
+                                                        <div class="form-group row mb-5">
+                                                            <label class="col-form-label col-xl-3 col-lg-3">Altura:<span
+                                                                    class="text-danger">*</span></label>
+                                                            <div class="col-lg-9 col-xl-9">
+                                                                <input type="text"
+                                                                    class="form-control form-control-sm qtdMask"
+                                                                    placeholder="Altura" name="alturaE">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-xl-12">
+                                                        <div class="form-group row mb-5">
+                                                            <label class="col-form-label col-xl-3 col-lg-3">Metro
+                                                                ²:</label>
+                                                            <div class="col-lg-9 col-xl-9">
+                                                                <input type="text"
+                                                                    class="form-control form-control-sm qtd3Mask"
+                                                                    placeholder="Metro ²" name="metroE" readonly>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-xl-12">
+                                                        <div class="form-group row mb-5">
+                                                            <label
+                                                                class="col-form-label col-xl-3 col-lg-3">Moeda:</label>
+                                                            <div class="col-lg-9 col-xl-9">
+                                                                <select class="form-control form-control-sm"
+                                                                    name="moedaE">
+                                                                    <option value="R$" selected>Real</option>
+                                                                    <option value="U$">Dólar</option>
+                                                                    <option value="€">Euro</option>
+
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-xl-12">
+                                                        <div class="form-group row mb-5">
+                                                            <label class="col-form-label col-xl-3 col-lg-3">Custo
+                                                                Pedra:<span class="text-danger">*</span></label>
+                                                            <div class="col-lg-9 col-xl-9">
+                                                                <div class="input-group">
+
+                                                                    <input type="text"
+                                                                        class="form-control form-control-sm money2Mask"
+                                                                        placeholder="Custo Pedra" name="custoE">
+                                                                    <div class="input-group-append">
+                                                                        <span class="input-group-text">
+                                                                            <i class="la la-dollar-sign icon-lg"></i>
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!--end::Form Wizard-->
+                                            </div>
+                                        </div>
+                                        <!--end::Wizard Body-->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <!--begin::Actions-->
+                        <button type="button" class="btn btn-success font-weight-bold action-hidden"
+                            data-wizard-type="action-submit">Gravar</button>
+                        <!--end::Actions-->
+                        <button type="button" class="btn btn-light-primary font-weight-bold" data-dismiss="modal">Fechar
+                            sem Incluir</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+var KTprodutosEdit = (function () {
+// Base elements
+var _wizardEl;
+var _formEl;
+var _wizardObj;
+var _validations = [];
+
+// Private functions
+var _initWizard = function () {
+// Initialize form wizard
+_wizardObj = new KTWizard(_wizardEl, {
+startStep: 1, // initial active step number
+clickableSteps: false, // allow step clicking
+});
+
+// Change event
+_wizardObj.on('changed', function (wizard) {
+KTUtil.scrollTop();
+});
+
+// Submit event
+_wizardObj.on('submit', function (wizard) {
+$('.action-hidden').hide();
+
+var validator = _validations[0]; // get validator for currnt step
+
+if (validator) {
+validator.validate().then(function (status) {
+if (status == 'Valid') {
+var data = new FormData();
+
+//Form data
+var form_data = $('#produtos_add_edit_form').serializeArray();
+$.each(form_data, function (key, input) {
+data.append(input.name, input.value);
+});
+
+$.ajax({
+url: '../romaneio/sql.php',
+type: 'POST',
+data: data,
+processData: false,
+contentType: false,
+success: function (data, status) {
+//console.log(data);
+var resposta = data.split('||');
+if (resposta[0] == 'success') {
+Swal.fire({
+title: 'Atualizado!',
+text: 'Produto atualizado com sucesso!',
+icon: 'success',
+timer: 1000,
+onOpen: function () {
+Swal.showLoading();
+},
+}).then(function (result) {
+$('.action-hidden').show();
+
+$('#editProduto').modal('toggle');
+
+$('.codigo_search').val('');
+$('.descricao_search').val('');
+
+$('input[name=produtoE]').val('');
+$('input[name=id_produtoE]').val('');
+$('input[name=id_romaneioE]').val('');
+$('input[name=chapasE]').val('');
+
+$('select[name=unidadeE]').val('');
+$('input[name=espessuraE]').val('');
+$('input[name=comprimentoE]').val('');
+$('input[name=alturaE]').val('');
+$('input[name=metroE]').val('');
+$('select[name=moedaE]').val('R$');
+$('input[name=custoE]').val('');
+
+var id_romaneio = $('#id_romaneio').val();
+
+$.ajax({
+url: '../romaneio/sql.php',
+type: 'POST',
+dataType: 'html',
+data: {
+type: 'produtos_view',
+id_romaneio: id_romaneio,
+},
+success: function (data) {
+$('.produtos').html(data);
+},
+});
+
+});
+} else {
+$('.action-hidden').show();
+
+Swal.fire({
+html: resposta[1],
+icon: 'error',
+buttonsStyling: false,
+confirmButtonText: 'OK, entendi!',
+customClass: {
+confirmButton: 'btn font-weight-bold btn-primary',
+},
+});
+}
+},
+error: function (xhr, desc, err) {
+$('.action-hidden').show();
+
+Swal.fire({
+html: 'O Produto não foi atualizado!',
+icon: 'error',
+buttonsStyling: false,
+confirmButtonText: 'OK, entendi!',
+customClass: {
+confirmButton: 'btn font-weight-bold btn-primary',
+},
+});
+},
+});
+} else {
+$('.action-hidden').show();
+}
+});
+}
+});
+};
+
+var _initValidation = function () {
+// Init form validation rules. For more info check the FormValidation plugin's official
+documentation:https://formvalidation.io/
+// Step 1
+
+_validations.push(
+FormValidation.formValidation(_formEl, {
+fields: {
+
+produto: {
+validators: {
+notEmpty: {
+message: 'Produto é Necessário',
+},
+},
+},
+chapas: {
+validators: {
+notEmpty: {
+message: 'Chapas é Necessário',
+},
+},
+},
+unidade: {
+validators: {
+notEmpty: {
+message: 'Unidade é Necessário',
+},
+},
+},
+
+espessura: {
+validators: {
+notEmpty: {
+message: 'Espessura é Necessário',
+},
+},
+},
+comprimento: {
+validators: {
+notEmpty: {
+message: 'Comprimento é Necessário',
+},
+},
+},
+altura: {
+validators: {
+notEmpty: {
+message: 'Altura é Necessário',
+},
+},
+},
+custo: {
+validators: {
+notEmpty: {
+message: 'Custo Pedra é Necessário',
+},
+},
+},
+},
+plugins: {
+trigger: new FormValidation.plugins.Trigger(),
+// Bootstrap Framework Integration
+bootstrap: new FormValidation.plugins.Bootstrap({
+//eleInvalidClass: '',
+eleValidClass: '',
+}),
+},
+})
+);
+};
+
+return {
+// public functions
+init: function () {
+_wizardEl = KTUtil.getById('produtos_add_edit');
+_formEl = KTUtil.getById('produtos_add_edit_form');
+
+_initWizard();
+_initValidation();
+},
+};
+})();
